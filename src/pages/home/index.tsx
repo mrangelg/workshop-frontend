@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useForm } from 'react-hook-form';
+import { Container } from './styled';
 import Input from '../../components/input';
 import Button from '../../components/button';
 
@@ -45,14 +46,14 @@ function Home(): JSX.Element {
 
   console.log('lyric: ', lyric);
   return (
-    <>
+    <Container>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Input name="artist" register={register} />
-        <Input name="song" register={register} />
+        <Input name="artist" register={register} label="Artist" />
+        <Input name="song" register={register} label="Song" />
         <Button name="Search" />
       </form>
       <div>{lyric?.lyrics}</div>
-    </>
+    </Container>
   );
 }
 

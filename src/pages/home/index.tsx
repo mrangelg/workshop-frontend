@@ -1,37 +1,54 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useForm } from 'react-hook-form';
+import Input from '../../components/input';
+import Button from '../../components/button';
 import Gretting from '../../components/greeting';
 
-interface Character {
-  id: number;
-  name: string;
-  status: string;
-  species: string;
-  type?: string;
-  gender: string;
-  origin: URL;
-  location: URL;
-  image: string;
-  episode: string[];
-  url: string;
-  created: string;
+interface Song {
+  lyrics: string;
 }
 
-type URL = {
-  name: string;
-  url: string;
+type FormData = {
+  artist: string;
+  song: string;
 };
 
 function Home(): JSX.Element {
+  const [artistName, setArtistName] = useState<string>();
+  const [songName, setSongName] = useState<string>();
+  const [lyric, setLyric] = useState<Song>();
+
+  const { register, handleSubmit, watch, errors } = useForm<FormData>();
+
+  const onSubmit = (data: FormData) => {
+    console.log('data:', data);
+    setArtistName(data.artist);
+    setSongName(data.song);
+  };
+
   useEffect(() => {
     axios
-      .get<Character>('https://rickandmortyapi.com/api/character/2')
+      .get<Song>(`https://api.lyrics.ovh/${artistName}/${songName}`)
       .then((response) => {
         console.log(response.data);
+        //setLyric(respo);
+      })
+      .catch((error) => {
+        console.log(error.response.data.error);
       });
-  }, []);
+  }, [artistName, songName]);
 
-  return <Gretting />;
+  return (
+    <>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Input name="artist" register={register} />
+        <Input name="song" register={register} />
+        <Button name="Search" />
+      </form>
+      <div>{lyric}</div>
+    </>
+  );
 }
 
 export default Home;

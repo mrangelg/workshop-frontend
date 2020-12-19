@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import Input from '../../components/input';
 import Button from '../../components/button';
-import Gretting from '../../components/greeting';
 
 interface Song {
   lyrics: string;
@@ -29,16 +28,22 @@ function Home(): JSX.Element {
 
   useEffect(() => {
     axios
-      .get<Song>(`https://api.lyrics.ovh/${artistName}/${songName}`)
+      .get<Song>(`https://api.lyrics.ovh/v1/${artistName}/${songName}`)
       .then((response) => {
-        console.log(response.data);
-        //setLyric(respo);
+        console.log('axios: ', response.data);
+        if (response.data) {
+          setLyric({ lyrics: response.data.lyrics });
+        } else {
+          setLyric({ lyrics: '' });
+        }
       })
       .catch((error) => {
         console.log(error.response.data.error);
+        setLyric({ lyrics: '' });
       });
   }, [artistName, songName]);
 
+  console.log('lyric: ', lyric);
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -46,7 +51,7 @@ function Home(): JSX.Element {
         <Input name="song" register={register} />
         <Button name="Search" />
       </form>
-      <div>{lyric}</div>
+      <div>{lyric?.lyrics}</div>
     </>
   );
 }
